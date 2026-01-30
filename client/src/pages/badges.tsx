@@ -2,7 +2,20 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Zap, Droplets, Leaf, Trophy, Crown, Target } from "lucide-react";
+import {
+  Award,
+  CalendarCheck,
+  ClipboardCheck,
+  Crown,
+  Droplets,
+  NotebookPen,
+  PenLine,
+  Sparkles,
+  Star,
+  Target,
+  Trophy,
+  Zap,
+} from "lucide-react";
 import { Badge as BadgeType, UserBadge } from "@shared/schema";
 
 interface UserBadgeWithBadge extends UserBadge {
@@ -24,10 +37,6 @@ export default function Badges() {
     queryKey: ["/api/badges/user"],
   });
 
-  const { data: dashboardData } = useQuery({
-    queryKey: ["/api/dashboard"],
-  });
-
   if (badgesLoading || userBadgesLoading) {
     return (
       <div className="space-y-6">
@@ -45,12 +54,41 @@ export default function Badges() {
 
   const getBadgeIcon = (iconName: string) => {
     const icons: Record<string, any> = {
-      tint: Droplets,
-      bolt: Zap,
-      leaf: Leaf,
+      droplet: Droplets,
+      zap: Zap,
+      "calendar-check": CalendarCheck,
+      sparkles: Sparkles,
+      "pen-line": PenLine,
+      award: Award,
+      "clipboard-check": ClipboardCheck,
+      "notebook-pen": NotebookPen,
+      target: Target,
+      star: Star,
       trophy: Trophy,
     };
     return icons[iconName] || Target;
+  };
+
+  const getBadgeTone = (iconName: string, isEarned: boolean) => {
+    if (!isEarned) {
+      return { bg: "bg-gray-100", text: "text-gray-400" };
+    }
+
+    const tones: Record<string, { bg: string; text: string }> = {
+      droplet: { bg: "bg-primary/10", text: "text-primary" },
+      zap: { bg: "bg-warning/10", text: "text-warning" },
+      "calendar-check": { bg: "bg-secondary/10", text: "text-secondary" },
+      sparkles: { bg: "bg-secondary/10", text: "text-secondary" },
+      "pen-line": { bg: "bg-success/10", text: "text-success" },
+      award: { bg: "bg-warning/10", text: "text-warning" },
+      "clipboard-check": { bg: "bg-success/10", text: "text-success" },
+      "notebook-pen": { bg: "bg-primary/10", text: "text-primary" },
+      target: { bg: "bg-secondary/10", text: "text-secondary" },
+      star: { bg: "bg-warning/10", text: "text-warning" },
+      trophy: { bg: "bg-secondary/10", text: "text-secondary" },
+    };
+
+    return tones[iconName] || { bg: "bg-secondary/10", text: "text-secondary" };
   };
 
   // Mock weekly challenge progress
@@ -65,6 +103,9 @@ export default function Badges() {
             <div className="text-right">
               <p className="text-2xl font-bold text-primary">{totalPoints}</p>
               <p className="text-sm text-gray-600">Total Points</p>
+              <p className="text-xs text-gray-500">
+                {earnedBadgeIds.length} of {allBadges.length} badges earned
+              </p>
             </div>
           </div>
 
@@ -86,50 +127,37 @@ export default function Badges() {
           </div>
 
           {/* Badge Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {allBadges.map((badge) => {
               const isEarned = earnedBadgeIds.includes(badge.id);
               const Icon = getBadgeIcon(badge.icon);
+              const tone = getBadgeTone(badge.icon, isEarned);
               
               return (
                 <div
                   key={badge.id}
-                  className={`text-center p-4 border border-gray-200 rounded-lg ${
+                  className={`text-center p-4 border border-gray-200 rounded-lg shadow-sm ${
                     !isEarned ? "opacity-50" : ""
                   }`}
                 >
-                  <div className={`h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-3 ${
-                    isEarned 
-                      ? badge.icon === "tint" 
-                        ? "bg-primary/10" 
-                        : badge.icon === "bolt"
-                        ? "bg-warning/10"
-                        : badge.icon === "leaf"
-                        ? "bg-success/10"
-                        : "bg-secondary/10"
-                      : "bg-gray-100"
-                  }`}>
-                    <Icon className={`h-8 w-8 ${
-                      isEarned
-                        ? badge.icon === "tint"
-                          ? "text-primary"
-                          : badge.icon === "bolt"
-                          ? "text-warning"
-                          : badge.icon === "leaf"
-                          ? "text-success"
-                          : "text-secondary"
-                        : "text-gray-400"
-                    }`} />
+                  <div className={`h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-3 ${tone.bg}`}>
+                    <Icon className={`h-8 w-8 ${tone.text}`} />
                   </div>
                   <h4 className="font-medium text-gray-900 mb-1">{badge.name}</h4>
                   <p className="text-xs text-gray-600 mb-2">{badge.description}</p>
+                  <p className="text-xs text-gray-500 mb-3">{badge.requirement}</p>
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <Badge variant="secondary" className="bg-gray-200 text-gray-700">
+                      {badge.points} pts
+                    </Badge>
+                  </div>
                   {isEarned ? (
                     <Badge variant="default" className="bg-success text-success-foreground">
                       Earned
                     </Badge>
                   ) : (
                     <Badge variant="secondary" className="bg-gray-300 text-gray-600">
-                      {badge.id === 3 ? "23/30 days" : "Locked"}
+                      Locked
                     </Badge>
                   )}
                 </div>
