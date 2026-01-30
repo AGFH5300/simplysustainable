@@ -92,57 +92,93 @@ export class MemStorage implements IStorage {
     const defaultTips: Tip[] = [
       {
         id: 1,
-        title: "Unplug Electronics",
-        description: "Devices on standby can consume 5-10% of your electricity bill.",
-        category: "electricity",
+        title: "Sort & Rinse Recycling",
+        description: "Give containers a quick rinse so more items can be recycled.",
+        category: "recycling",
         difficulty: "easy",
-        potentialSavings: "$2-5/month",
-        icon: "tv"
+        potentialSavings: "8",
+        icon: "recycle"
       },
       {
         id: 2,
-        title: "Adjust Thermostat",
-        description: "Set temperature 2°C higher in summer, lower in winter.",
-        category: "electricity",
-        difficulty: "medium",
-        potentialSavings: "$10-20/month",
-        icon: "thermometer-half"
+        title: "Bring a Reusable Tote",
+        description: "Keep a foldable bag handy to avoid single-use packaging.",
+        category: "recycling",
+        difficulty: "easy",
+        potentialSavings: "6",
+        icon: "bag-shopping"
       },
       {
         id: 3,
-        title: "Use Natural Light",
-        description: "Open curtains during day, turn off unnecessary lights.",
-        category: "electricity",
-        difficulty: "easy",
-        potentialSavings: "$3-8/month",
-        icon: "sun"
+        title: "Create a Drop-off Station",
+        description: "Set aside a bin for batteries, glass, and special recyclables.",
+        category: "recycling",
+        difficulty: "medium",
+        potentialSavings: "12",
+        icon: "box"
       },
       {
         id: 4,
-        title: "Shorter Showers",
-        description: "Reduce shower time by 2 minutes to save 10+ liters daily.",
-        category: "water",
-        difficulty: "easy",
-        potentialSavings: "$5-10/month",
-        icon: "shower"
+        title: "Choose Refill Options",
+        description: "Pick refillable products to cut down on packaging waste.",
+        category: "recycling",
+        difficulty: "medium",
+        potentialSavings: "10",
+        icon: "bottle-droplet"
       },
       {
         id: 5,
-        title: "Fix Leaky Taps",
-        description: "A dripping tap can waste over 3,000 liters per year.",
-        category: "water",
-        difficulty: "medium",
-        potentialSavings: "$15-25/month",
-        icon: "wrench"
+        title: "Host a Swap Moment",
+        description: "Trade books, clothes, or supplies to keep items in use longer.",
+        category: "recycling",
+        difficulty: "hard",
+        potentialSavings: "18",
+        icon: "handshake"
       },
       {
         id: 6,
-        title: "Full Load Washing",
-        description: "Wait for full loads before running washing machine or dishwasher.",
-        category: "water",
+        title: "Carry a Water Bottle",
+        description: "Keep a reusable bottle nearby to stay hydrated all day.",
+        category: "hydration",
         difficulty: "easy",
-        potentialSavings: "$3-7/month",
-        icon: "tshirt"
+        potentialSavings: "7",
+        icon: "bottle-water"
+      },
+      {
+        id: 7,
+        title: "Set Hydration Reminders",
+        description: "Use a timer or app to sip water every hour.",
+        category: "hydration",
+        difficulty: "easy",
+        potentialSavings: "5",
+        icon: "clock"
+      },
+      {
+        id: 8,
+        title: "Flavor with Fruit",
+        description: "Add citrus or berries to make water more appealing.",
+        category: "hydration",
+        difficulty: "easy",
+        potentialSavings: "6",
+        icon: "lemon"
+      },
+      {
+        id: 9,
+        title: "Plan Water Breaks",
+        description: "Pair a glass of water with key daily routines.",
+        category: "hydration",
+        difficulty: "medium",
+        potentialSavings: "9",
+        icon: "calendar"
+      },
+      {
+        id: 10,
+        title: "Track Your Intake",
+        description: "Log cups or liters to stay consistent with your goal.",
+        category: "hydration",
+        difficulty: "medium",
+        potentialSavings: "11",
+        icon: "clipboard-list"
       }
     ];
 
@@ -155,35 +191,51 @@ export class MemStorage implements IStorage {
     const defaultBadges: Badge[] = [
       {
         id: 1,
-        name: "Water Saver",
-        description: "Save 20% water usage",
-        icon: "tint",
-        requirement: "Reduce water usage by 20% for 3 consecutive days",
-        points: 50
+        name: "Hydration Hero",
+        description: "Hit your hydration goal",
+        icon: "droplet",
+        requirement: "Average at least 12 cups/L for 2 weeks",
+        points: 60
       },
       {
         id: 2,
-        name: "Energy Star",
-        description: "5 days low usage",
-        icon: "bolt",
-        requirement: "Keep electricity usage below daily limit for 5 days",
+        name: "Recycling Streak",
+        description: "Keep the recycling rolling",
+        icon: "recycle",
+        requirement: "Log 10+ recycling actions for 2 weeks",
         points: 75
       },
       {
         id: 3,
-        name: "Eco Master",
-        description: "1 month streak",
-        icon: "leaf",
-        requirement: "Maintain conservation goals for 30 days",
-        points: 200
+        name: "Consistency Builder",
+        description: "Show up week after week",
+        icon: "calendar-check",
+        requirement: "Log habits for 4 weeks",
+        points: 100
       },
       {
         id: 4,
-        name: "Champion",
-        description: "Top 10% saver",
-        icon: "trophy",
-        requirement: "Achieve top 10% in monthly savings",
-        points: 300
+        name: "Dual Goal Getter",
+        description: "Balance both habits",
+        icon: "sparkles",
+        requirement: "Meet hydration and recycling goals in 2 weeks",
+        points: 140
+      },
+      {
+        id: 5,
+        name: "Mindful Tracker",
+        description: "Capture habit reflections",
+        icon: "pen-line",
+        requirement: "Add notes in 2 habit logs",
+        points: 110
+      },
+      {
+        id: 6,
+        name: "GreenSteps Legend",
+        description: "Sustain the momentum",
+        icon: "award",
+        requirement: "Log habits for 6 weeks",
+        points: 200
       }
     ];
 
@@ -196,9 +248,9 @@ export class MemStorage implements IStorage {
     const defaultSettings: Settings = {
       id: 1,
       userId: 1,
-      electricityLimit: "200",
-      electricityUnit: "kWh",
-      waterLimit: "1500",
+      electricityLimit: "10",
+      electricityUnit: "items",
+      waterLimit: "14",
       waterUnit: "L",
       weeklyAlerts: true,
       thresholdAlerts: true,
@@ -217,9 +269,9 @@ export class MemStorage implements IStorage {
         id: this.currentUsageId++,
         userId: 1,
         weekStartDate: weekStartStr,
-        electricityUsage: (Math.random() * 50 + 150).toFixed(2),
-        electricityUnit: "kWh",
-        waterUsage: (Math.random() * 300 + 1200).toFixed(0),
+        electricityUsage: (Math.random() * 10 + 6).toFixed(0),
+        electricityUnit: "items",
+        waterUsage: (Math.random() * 6 + 10).toFixed(0),
         waterUnit: "L",
         notes: null,
         createdAt: new Date()
@@ -341,21 +393,50 @@ export class MemStorage implements IStorage {
     
     const eligibleBadges: Badge[] = [];
     
-    // Check for Water Saver badge
+    // Check for Hydration Hero badge
     if (!earnedBadgeIds.includes(1) && entries.length >= 2) {
       const waterUsages = entries.map(e => parseFloat(e.waterUsage || "0"));
       const avgUsage = waterUsages.reduce((a, b) => a + b, 0) / waterUsages.length;
-      if (avgUsage < 1400) { // Less than 1400L weekly average
+      if (avgUsage >= 12) {
         eligibleBadges.push(this.badges.get(1)!);
       }
     }
     
-    // Check for Energy Star badge
+    // Check for Recycling Streak badge
     if (!earnedBadgeIds.includes(2) && entries.length >= 2) {
-      const lowUsageWeeks = entries.filter(e => parseFloat(e.electricityUsage || "0") < 180).length;
-      if (lowUsageWeeks >= 2) {
+      const strongWeeks = entries.filter(e => parseFloat(e.electricityUsage || "0") >= 10).length;
+      if (strongWeeks >= 2) {
         eligibleBadges.push(this.badges.get(2)!);
       }
+    }
+
+    // Check for Consistency Builder badge
+    if (!earnedBadgeIds.includes(3) && entries.length >= 4) {
+      eligibleBadges.push(this.badges.get(3)!);
+    }
+
+    // Check for Dual Goal Getter badge
+    if (!earnedBadgeIds.includes(4) && entries.length >= 2) {
+      const dualGoalWeeks = entries.filter(entry => 
+        parseFloat(entry.electricityUsage || "0") >= 10 &&
+        parseFloat(entry.waterUsage || "0") >= 12
+      ).length;
+      if (dualGoalWeeks >= 2) {
+        eligibleBadges.push(this.badges.get(4)!);
+      }
+    }
+
+    // Check for Mindful Tracker badge
+    if (!earnedBadgeIds.includes(5)) {
+      const notedWeeks = entries.filter(entry => (entry.notes || "").trim().length > 0).length;
+      if (notedWeeks >= 2) {
+        eligibleBadges.push(this.badges.get(5)!);
+      }
+    }
+
+    // Check for GreenSteps Legend badge
+    if (!earnedBadgeIds.includes(6) && entries.length >= 6) {
+      eligibleBadges.push(this.badges.get(6)!);
     }
     
     return eligibleBadges;
@@ -376,9 +457,9 @@ export class MemStorage implements IStorage {
       const settings: Settings = {
         id,
         userId,
-        electricityLimit: "200",
-        electricityUnit: "kWh",
-        waterLimit: "1500",
+        electricityLimit: "10",
+        electricityUnit: "items",
+        waterLimit: "14",
         waterUnit: "L",
         weeklyAlerts: true,
         thresholdAlerts: true,

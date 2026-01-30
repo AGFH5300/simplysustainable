@@ -346,7 +346,7 @@ export default function Dashboard() {
   const settings = dashboardData?.settings;
   const currentUsage = dashboardData?.currentWeekUsage;
   const getTipCategoryLabel = (category?: string) =>
-    category === "electricity" ? "Waste & Recycling" : "Water & Hydration";
+    category === "recycling" ? "Waste & Recycling" : "Water & Hydration";
 
   return (
     <div className="space-y-6">
@@ -870,7 +870,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="ml-4">
-                      {tip.category === 'electricity' ? (
+                      {tip.category === 'recycling' ? (
                         <Recycle className="h-5 w-5 text-primary" />
                       ) : (
                         <Droplets className="h-5 w-5 text-secondary" />
