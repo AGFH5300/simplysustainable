@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Zap, Droplets, Lightbulb, RefreshCw, CheckCircle, AlertCircle } from "lucide-react";
+import { Recycle, Droplets, Lightbulb, RefreshCw, CheckCircle, AlertCircle } from "lucide-react";
 import { Tip } from "@shared/schema";
 
 export default function Tips() {
@@ -21,8 +21,8 @@ export default function Tips() {
     ? tips 
     : tips.filter(tip => tip.category === selectedCategory);
 
-  const electricityTips = tips.filter(tip => tip.category === "electricity");
-  const waterTips = tips.filter(tip => tip.category === "water");
+  const recyclingTips = tips.filter(tip => tip.category === "recycling");
+  const hydrationTips = tips.filter(tip => tip.category === "hydration");
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -34,7 +34,7 @@ export default function Tips() {
   };
 
   const getCategoryIcon = (category: string) => {
-    return category === "electricity" ? Zap : Droplets;
+    return category === "recycling" ? Recycle : Droplets;
   };
 
   if (isLoading) {
@@ -54,7 +54,7 @@ export default function Tips() {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Energy & Water Saving Tips</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Recycling & Hydration Tips</h2>
             <Button 
               variant="outline" 
               size="sm"
@@ -99,40 +99,40 @@ export default function Tips() {
               All Tips
             </Button>
             <Button
-              variant={selectedCategory === "electricity" ? "default" : "outline"}
-              onClick={() => setSelectedCategory("electricity")}
+              variant={selectedCategory === "recycling" ? "default" : "outline"}
+              onClick={() => setSelectedCategory("recycling")}
               size="sm"
               className="flex items-center"
             >
-              <Zap className="h-4 w-4 mr-1" />
-              Electricity
+              <Recycle className="h-4 w-4 mr-1" />
+              Recycling
             </Button>
             <Button
-              variant={selectedCategory === "water" ? "default" : "outline"}
-              onClick={() => setSelectedCategory("water")}
+              variant={selectedCategory === "hydration" ? "default" : "outline"}
+              onClick={() => setSelectedCategory("hydration")}
               size="sm"
               className="flex items-center"
             >
               <Droplets className="h-4 w-4 mr-1" />
-              Water
+              Hydration
             </Button>
           </div>
 
           {/* Tips Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Electricity Tips Column */}
+            {/* Recycling Tips Column */}
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-900 flex items-center">
-                <Zap className="h-5 w-5 text-warning mr-2" />
-                Electricity Tips
+                <Recycle className="h-5 w-5 text-warning mr-2" />
+                Recycling Tips
               </h3>
               
-              {electricityTips.map((tip) => (
+              {recyclingTips.map((tip) => (
                 <Card key={tip.id} className="border border-gray-200">
                   <CardContent className="p-4">
                     <div className="flex items-start">
                       <div className="h-8 w-8 bg-warning/10 rounded-full flex items-center justify-center mr-3 mt-1">
-                        <Zap className="h-4 w-4 text-warning" />
+                        <Recycle className="h-4 w-4 text-warning" />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900 mb-1">{tip.title}</h4>
@@ -154,14 +154,14 @@ export default function Tips() {
               ))}
             </div>
 
-            {/* Water Tips Column */}
+            {/* Hydration Tips Column */}
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-900 flex items-center">
                 <Droplets className="h-5 w-5 text-primary mr-2" />
-                Water Tips
+                Hydration Tips
               </h3>
               
-              {waterTips.map((tip) => (
+              {hydrationTips.map((tip) => (
                 <Card key={tip.id} className="border border-gray-200">
                   <CardContent className="p-4">
                     <div className="flex items-start">
@@ -203,7 +203,7 @@ export default function Tips() {
               <div className="flex items-center justify-between bg-white rounded-lg p-4">
                 <div className="flex items-center">
                   <CheckCircle className="h-5 w-5 text-success mr-3" />
-                  <span className="text-sm">You're doing great with water conservation!</span>
+                  <span className="text-sm">You're doing great with your hydration habits!</span>
                 </div>
                 <span className="text-xs text-success font-medium">Keep it up!</span>
               </div>

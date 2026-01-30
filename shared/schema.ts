@@ -24,7 +24,7 @@ export const tips = pgTable("tips", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
-  category: text("category").notNull(), // electricity, water
+  category: text("category").notNull(), // recycling, hydration
   difficulty: text("difficulty").notNull(), // easy, medium, hard
   potentialSavings: text("potential_savings"),
   icon: text("icon").notNull(),
