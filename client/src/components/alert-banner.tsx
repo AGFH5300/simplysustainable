@@ -11,17 +11,17 @@ interface AlertBannerProps {
 
 export function AlertBanner({ type, usage, threshold, onDismiss }: AlertBannerProps) {
   const percentage = Math.round(((usage - threshold) / threshold) * 100);
-  const unit = type === "electricity" ? "kWh" : "L";
+  const unit = type === "electricity" ? "items" : "L";
   
   return (
     <Alert className="mb-6 bg-warning text-warning-foreground border-warning">
       <AlertTriangle className="h-4 w-4" />
       <AlertDescription className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold">High Usage Alert</h3>
+          <h3 className="font-semibold">Goal Alert</h3>
           <p className="text-sm opacity-90">
-            {type === "electricity" ? "Electricity" : "Water"} usage is {percentage}% above your daily target ({usage}{unit} vs {threshold}{unit}). 
-            Consider {type === "electricity" ? "turning off unused devices" : "reducing water consumption"}.
+            Your {type === "electricity" ? "recycling actions" : "hydration"} are {percentage}% above your weekly goal ({usage}{unit} vs {threshold}{unit}).
+            Consider {type === "electricity" ? "sorting one more bag or sharing items to reuse" : "spacing your water breaks throughout the day"}.
           </p>
         </div>
         <Button
