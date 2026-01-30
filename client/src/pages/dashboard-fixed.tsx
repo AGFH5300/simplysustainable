@@ -355,7 +355,7 @@ export default function Dashboard() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <Leaf className="h-8 w-8 text-primary mr-3" />
-            <h1 className="text-3xl font-bold text-foreground">GreenSteps</h1>
+            <h1 className="text-3xl font-bold text-foreground">SimplySustainable</h1>
           </div>
           <p className="text-muted-foreground">
             Track daily habits, stay hydrated, recycle more, and see your sustainable progress grow over time.
