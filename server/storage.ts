@@ -231,7 +231,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: 6,
-        name: "GreenSteps Legend",
+        name: "SimplySustainable Legend",
         description: "Sustain the momentum",
         icon: "award",
         requirement: "Log habits for 6 weeks",
@@ -434,7 +434,6 @@ export class MemStorage implements IStorage {
       }
     }
 
-    // Check for GreenSteps Legend badge
     if (!earnedBadgeIds.includes(6) && entries.length >= 6) {
       eligibleBadges.push(this.badges.get(6)!);
     }
