@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Zap, Droplets, Target, PiggyBank, TrendingUp, TrendingDown, Plus, Lightbulb, RefreshCw, Home, AlertTriangle, Leaf, Calendar, Clock, StickyNote, Settings as SettingsIcon, X, Edit } from "lucide-react";
+import { Droplets, Target, Lightbulb, RefreshCw, Leaf, Calendar, StickyNote, Settings as SettingsIcon, X, Edit, Recycle, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertBanner } from "@/components/alert-banner";
 import { UsageCharts } from "@/components/charts";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -26,7 +25,7 @@ import {
   insertUsageEntrySchema,
   insertSettingsSchema
 } from "@shared/schema";
-import { formatUsage, calculatePercentageChange, getUsageStatus } from "@/lib/utils";
+import { formatUsage } from "@/lib/utils";
 
 const formSchema = insertUsageEntrySchema.extend({
   electricityUnit: z.string(),
@@ -34,49 +33,49 @@ const formSchema = insertUsageEntrySchema.extend({
 });
 
 const settingsSchema = insertSettingsSchema.extend({
-  electricityLimit: z.string().min(1, "Electricity limit is required"),
-  waterLimit: z.string().min(1, "Water limit is required"),
+  electricityLimit: z.string().min(1, "Recycling goal is required"),
+  waterLimit: z.string().min(1, "Hydration goal is required"),
 });
 
 type FormData = z.infer<typeof formSchema>;
 type SettingsData = z.infer<typeof settingsSchema>;
 
 const electricityUnits = [
-  { label: "kWh (Kilowatt hours)", value: "kWh" },
-  { label: "Wh (Watt hours)", value: "Wh" },
-  { label: "MWh (Megawatt hours)", value: "MWh" },
+  { label: "Items recycled", value: "items" },
+  { label: "Bags recycled", value: "bags" },
+  { label: "kg diverted", value: "kg" },
 ];
 
 const waterUnits = [
-  { label: "L (Liters)", value: "L" },
-  { label: "Gal (Gallons)", value: "Gal" },
-  { label: "m³ (Cubic meters)", value: "m³" },
+  { label: "L (liters)", value: "L" },
+  { label: "Cups", value: "cups" },
+  { label: "oz (ounces)", value: "oz" },
 ];
 
 const quickScenarios = [
   { 
-    name: "Normal Weekday", 
-    description: "Typical home usage",
-    electricityUsage: "25",
-    waterUsage: "150"
+    name: "Hydration Focus", 
+    description: "Prioritize steady water breaks",
+    electricityUsage: "6",
+    waterUsage: "14"
   },
   { 
-    name: "Weekend at Home", 
-    description: "More usage from being home",
-    electricityUsage: "35",
-    waterUsage: "200"
+    name: "Recycling Run", 
+    description: "Sort and drop off recycling",
+    electricityUsage: "12",
+    waterUsage: "10"
   },
   { 
-    name: "Away/Vacation", 
-    description: "Minimal usage",
-    electricityUsage: "10",
-    waterUsage: "50"
+    name: "Low Waste Week", 
+    description: "Reuse containers and avoid single-use",
+    electricityUsage: "8",
+    waterUsage: "12"
   },
   { 
-    name: "High Usage Day", 
-    description: "AC/heating, laundry, etc.",
-    electricityUsage: "45",
-    waterUsage: "300"
+    name: "Community Clean-up", 
+    description: "Extra impact with a neighborhood sweep",
+    electricityUsage: "18",
+    waterUsage: "16"
   }
 ];
 
@@ -136,7 +135,7 @@ export default function Dashboard() {
       electricityUsage: "",
       waterUsage: "",
       weekStartDate: getMondayOfWeek(),
-      electricityUnit: "kWh",
+      electricityUnit: "items",
       waterUnit: "L",
       notes: "",
     },
@@ -145,9 +144,9 @@ export default function Dashboard() {
   const settingsForm = useForm<SettingsData>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      electricityLimit: "200",
-      electricityUnit: "kWh",
-      waterLimit: "1500",
+      electricityLimit: "10",
+      electricityUnit: "items",
+      waterLimit: "14",
       waterUnit: "L",
       weeklyAlerts: true,
       thresholdAlerts: true,
@@ -169,22 +168,22 @@ export default function Dashboard() {
           } catch (e) {
             // Ignore JSON parsing errors
           }
-          throw new Error("Data for this week already exists. You can edit the existing entry instead.");
+          throw new Error("A habit log for this week already exists. You can edit the existing entry instead.");
         }
-        throw new Error("Failed to add usage data");
+        throw new Error("Failed to add habit log");
       }
       return response.json();
     },
     onSuccess: () => {
       toast({
-        title: "Usage data added successfully",
-        description: "Your electricity and water usage has been recorded.",
+        title: "Habit log saved",
+        description: "Your recycling and hydration progress has been recorded.",
       });
       form.reset({
         electricityUsage: "",
         waterUsage: "",
         weekStartDate: getMondayOfWeek(),
-        electricityUnit: "kWh",
+        electricityUnit: "items",
         waterUnit: "L",
         notes: "",
       });
@@ -193,7 +192,7 @@ export default function Dashboard() {
     },
     onError: (error) => {
       toast({
-        title: "Cannot add usage data",
+        title: "Cannot add habit log",
         description: error.message,
         variant: "destructive",
       });
@@ -204,21 +203,21 @@ export default function Dashboard() {
     mutationFn: async ({ id, data }: { id: number; data: Partial<FormData> }) => {
       const response = await apiRequest("PUT", `/api/usage/${id}`, data);
       if (!response.ok) {
-        throw new Error("Failed to update usage data");
+        throw new Error("Failed to update habit log");
       }
       return response.json();
     },
     onSuccess: () => {
       toast({
-        title: "Usage data updated successfully",
-        description: "Your electricity and water usage has been updated.",
+        title: "Habit log updated",
+        description: "Your recycling and hydration progress has been updated.",
       });
       setEditingEntry(null);
       form.reset({
         electricityUsage: "",
         waterUsage: "",
         weekStartDate: getMondayOfWeek(),
-        electricityUnit: "kWh",
+        electricityUnit: "items",
         waterUnit: "L",
         notes: "",
       });
@@ -227,7 +226,7 @@ export default function Dashboard() {
     },
     onError: (error) => {
       toast({
-        title: "Error updating usage data",
+        title: "Error updating habit log",
         description: error.message,
         variant: "destructive",
       });
@@ -280,7 +279,7 @@ export default function Dashboard() {
     if (!data.electricityUsage && !data.waterUsage) {
       toast({
         title: "No data entered",
-        description: "Please enter at least electricity or water usage.",
+        description: "Please log at least recycling or hydration progress.",
         variant: "destructive",
       });
       return;
@@ -299,7 +298,7 @@ export default function Dashboard() {
         electricityUsage: editingEntry.electricityUsage || "",
         waterUsage: editingEntry.waterUsage || "",
         weekStartDate: editingEntry.weekStartDate,
-        electricityUnit: editingEntry.electricityUnit || "kWh",
+        electricityUnit: editingEntry.electricityUnit || "items",
         waterUnit: editingEntry.waterUnit || "L",
         notes: editingEntry.notes || "",
       });
@@ -313,7 +312,7 @@ export default function Dashboard() {
       electricityUsage: "",
       waterUsage: "",
       weekStartDate: getMondayOfWeek(),
-      electricityUnit: "kWh",
+      electricityUnit: "items",
       waterUnit: "L",
       notes: "",
     });
@@ -338,7 +337,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading dashboard...</p>
+          <p className="text-muted-foreground">Loading your habits...</p>
         </div>
       </div>
     );
@@ -346,6 +345,8 @@ export default function Dashboard() {
 
   const settings = dashboardData?.settings;
   const currentUsage = dashboardData?.currentWeekUsage;
+  const getTipCategoryLabel = (category?: string) =>
+    category === "electricity" ? "Waste & Recycling" : "Water & Hydration";
 
   return (
     <div className="space-y-6">
@@ -353,10 +354,12 @@ export default function Dashboard() {
       <div className="relative">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Zap className="h-8 w-8 text-primary mr-3" />
-            <h1 className="text-3xl font-bold text-foreground">WattWatch</h1>
+            <Leaf className="h-8 w-8 text-primary mr-3" />
+            <h1 className="text-3xl font-bold text-foreground">GreenSteps</h1>
           </div>
-          <p className="text-muted-foreground">Monitor and reduce your electricity and water consumption</p>
+          <p className="text-muted-foreground">
+            Track daily habits, stay hydrated, recycle more, and see your sustainable progress grow over time.
+          </p>
         </div>
         
         {/* Settings Button */}
@@ -373,7 +376,7 @@ export default function Dashboard() {
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
             <div className="bg-card border border-border rounded-lg p-6 w-full max-w-md mx-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-card-foreground">Settings</h2>
+                <h2 className="text-xl font-semibold text-card-foreground">Preferences</h2>
                 <button
                   onClick={() => setShowSettings(false)}
                   className="text-muted-foreground hover:text-primary"
@@ -390,7 +393,7 @@ export default function Dashboard() {
                       name="electricityUnit"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Electricity Unit</FormLabel>
+                          <FormLabel>Recycling Unit</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -414,7 +417,7 @@ export default function Dashboard() {
                       name="waterUnit"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Water Unit</FormLabel>
+                          <FormLabel>Hydration Unit</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -440,7 +443,7 @@ export default function Dashboard() {
                       name="electricityLimit"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Weekly Electricity Limit</FormLabel>
+                          <FormLabel>Weekly Recycling Goal</FormLabel>
                           <FormControl>
                             <Input {...field} type="number" />
                           </FormControl>
@@ -453,7 +456,7 @@ export default function Dashboard() {
                       name="waterLimit"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Weekly Water Limit</FormLabel>
+                          <FormLabel>Weekly Hydration Goal</FormLabel>
                           <FormControl>
                             <Input {...field} type="number" />
                           </FormControl>
@@ -468,7 +471,7 @@ export default function Dashboard() {
                       name="weeklyAlerts"
                       render={({ field }) => (
                         <FormItem className="flex items-center justify-between">
-                          <FormLabel>Weekly usage alerts</FormLabel>
+                          <FormLabel>Weekly habit alerts</FormLabel>
                           <FormControl>
                             <Switch
                               checked={field.value}
@@ -484,7 +487,7 @@ export default function Dashboard() {
                       name="thresholdAlerts"
                       render={({ field }) => (
                         <FormItem className="flex items-center justify-between">
-                          <FormLabel>Threshold alerts</FormLabel>
+                          <FormLabel>Goal threshold alerts</FormLabel>
                           <FormControl>
                             <Switch
                               checked={field.value}
@@ -500,7 +503,7 @@ export default function Dashboard() {
                       name="savingTips"
                       render={({ field }) => (
                         <FormItem className="flex items-center justify-between">
-                          <FormLabel>Show saving tips</FormLabel>
+                          <FormLabel>Show eco tips</FormLabel>
                           <FormControl>
                             <Switch
                               checked={field.value}
@@ -533,83 +536,83 @@ export default function Dashboard() {
 
       <Tabs defaultValue="dashboard" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="input">Add Data</TabsTrigger>
+          <TabsTrigger value="dashboard">Overview</TabsTrigger>
+          <TabsTrigger value="input">Log Habits</TabsTrigger>
           <TabsTrigger value="tips">Tips</TabsTrigger>
-          <TabsTrigger value="badges">Badges</TabsTrigger>
+          <TabsTrigger value="badges">Milestones</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
-          {/* Usage Charts */}
+          {/* Progress Charts */}
           <UsageCharts weeklyData={dashboardData?.recentUsage || []} />
 
           {/* Current Week Summary */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">This Week's Electricity</CardTitle>
-                <Zap className="h-4 w-4 text-primary" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-primary">
-                  {formatUsage(currentUsage?.electricityUsage, settings?.electricityUnit || "kWh")}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Week of {currentUsage?.weekStartDate ? new Date(currentUsage.weekStartDate).toLocaleDateString() : "No data"}
-                </p>
-              </CardContent>
-            </Card>
+              <CardTitle className="text-sm font-medium">This Week's Recycling</CardTitle>
+              <Recycle className="h-4 w-4 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-primary">
+                {formatUsage(currentUsage?.electricityUsage, settings?.electricityUnit || "items")}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Week starting {currentUsage?.weekStartDate ? new Date(currentUsage.weekStartDate).toLocaleDateString() : "No data"}
+              </p>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">This Week's Water</CardTitle>
-                <Droplets className="h-4 w-4" style={{ stroke: 'hsl(220, 100%, 60%)' }} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold" style={{color: 'rgb(51, 119, 255)'}}>
-                  {formatUsage(currentUsage?.waterUsage, settings?.waterUnit || "L")}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Week of {currentUsage?.weekStartDate ? new Date(currentUsage.weekStartDate).toLocaleDateString() : "No data"}
-                </p>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">This Week's Hydration</CardTitle>
+              <Droplets className="h-4 w-4 text-secondary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-secondary">
+                {formatUsage(currentUsage?.waterUsage, settings?.waterUnit || "L")}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Week starting {currentUsage?.weekStartDate ? new Date(currentUsage.weekStartDate).toLocaleDateString() : "No data"}
+              </p>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Points Earned</CardTitle>
-                <Target className="h-4 w-4 text-success" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-success">{dashboardData?.totalPoints || 0}</div>
-                <p className="text-xs text-muted-foreground">Conservation points</p>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Habit Streak</CardTitle>
+              <Target className="h-4 w-4 text-success" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-success">{dashboardData?.totalPoints || 0}</div>
+              <p className="text-xs text-muted-foreground">Consistency points</p>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Monthly Savings</CardTitle>
-                <PiggyBank className="h-4 w-4 text-warning" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-warning">${dashboardData?.monthlySavings || 0}</div>
-                <p className="text-xs text-muted-foreground">Estimated savings</p>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Impact Score</CardTitle>
+              <Sparkles className="h-4 w-4 text-warning" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-warning">{dashboardData?.monthlySavings || 0}</div>
+              <p className="text-xs text-muted-foreground">Estimated eco impact</p>
+            </CardContent>
+          </Card>
           </div>
         </TabsContent>
 
         <TabsContent value="input" className="space-y-6">
           {/* Edit Alert */}
           {editingEntry && (
-            <Card className="border-warning bg-warning/10">
+              <Card className="border-warning bg-warning/10">
               <CardContent className="pt-6">
                 <div className="flex items-center space-x-2">
                   <Edit className="h-5 w-5 text-warning" />
                   <div className="flex-1">
-                    <p className="font-medium text-warning">Editing existing data</p>
+                    <p className="font-medium text-warning">Editing existing habit log</p>
                     <p className="text-sm text-muted-foreground">
-                      You're editing data for week of {new Date(editingEntry.weekStartDate).toLocaleDateString()}
+                      You're updating the week starting {new Date(editingEntry.weekStartDate).toLocaleDateString()}
                     </p>
                   </div>
                   <Button variant="outline" size="sm" onClick={handleCancelEdit}>
@@ -622,9 +625,9 @@ export default function Dashboard() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Weekly Usage Input</CardTitle>
+              <CardTitle>Weekly Habit Check-in</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Enter your electricity and water usage for the week
+                Log your recycling actions and water intake for the week
               </p>
             </CardHeader>
             <CardContent>
@@ -638,11 +641,11 @@ export default function Dashboard() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center space-x-2">
-                              <Zap className="h-4 w-4 text-primary" />
-                              <span>Electricity Usage</span>
+                              <Recycle className="h-4 w-4 text-primary" />
+                              <span>Recycling Actions</span>
                             </FormLabel>
                             <FormControl>
-                              <Input {...field} type="number" step="0.01" placeholder="Enter amount" />
+                              <Input {...field} type="number" step="0.01" placeholder="Items or bags recycled" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -654,7 +657,7 @@ export default function Dashboard() {
                         name="electricityUnit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Unit</FormLabel>
+                            <FormLabel>Recycling Unit</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -681,11 +684,11 @@ export default function Dashboard() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="flex items-center space-x-2">
-                              <Droplets className="h-4 w-4" style={{ stroke: 'hsl(220, 100%, 60%)' }} />
-                              <span>Water Usage</span>
+                              <Droplets className="h-4 w-4 text-secondary" />
+                              <span>Water Intake</span>
                             </FormLabel>
                             <FormControl>
-                              <Input {...field} type="number" step="0.01" placeholder="Enter amount" />
+                              <Input {...field} type="number" step="0.01" placeholder="Liters or cups of water" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -697,7 +700,7 @@ export default function Dashboard() {
                         name="waterUnit"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Unit</FormLabel>
+                            <FormLabel>Hydration Unit</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -746,7 +749,7 @@ export default function Dashboard() {
                         </FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="Any additional context about this week's usage..." 
+                            placeholder="Add a note about your habits, wins, or challenges..." 
                             value={field.value || ""}
                             onChange={field.onChange}
                             onBlur={field.onBlur}
@@ -768,8 +771,8 @@ export default function Dashboard() {
                       {createUsageMutation.isPending || updateUsageMutation.isPending 
                         ? "Saving..." 
                         : editingEntry 
-                          ? "Update Usage Data" 
-                          : "Add Usage Data"
+                          ? "Update Habit Log" 
+                          : "Add Habit Log"
                       }
                     </Button>
                     {editingEntry && (
@@ -787,7 +790,7 @@ export default function Dashboard() {
 
               {/* Quick Scenarios */}
               <div className="mt-6 pt-6 border-t">
-                <h3 className="text-lg font-semibold mb-4">Quick Scenarios</h3>
+                <h3 className="text-lg font-semibold mb-4">Quick Habit Boosts</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {quickScenarios.map((scenario, index) => (
                     <Button
@@ -814,7 +817,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center space-x-2">
                     <Lightbulb className="h-5 w-5 text-primary" />
-                    <span>Featured Tip</span>
+                    <span>Featured Eco Tip</span>
                   </CardTitle>
                   <Button
                     variant="ghost"
@@ -833,7 +836,7 @@ export default function Dashboard() {
                     {featuredTip.difficulty}
                   </Badge>
                   <span className="text-sm text-success font-medium">
-                    Save up to ${featuredTip.potentialSavings}/month
+                    Impact +{featuredTip.potentialSavings} pts/week
                   </span>
                 </div>
               </CardContent>
@@ -859,18 +862,18 @@ export default function Dashboard() {
                           {tip.difficulty}
                         </Badge>
                         <Badge variant="outline" className="text-primary">
-                          {tip.category}
+                          {getTipCategoryLabel(tip.category)}
                         </Badge>
                         <span className="text-sm text-success font-medium">
-                          ${tip.potentialSavings}/month
+                          +{tip.potentialSavings} pts/week
                         </span>
                       </div>
                     </div>
                     <div className="ml-4">
                       {tip.category === 'electricity' ? (
-                        <Zap className="h-5 w-5 text-primary" />
+                        <Recycle className="h-5 w-5 text-primary" />
                       ) : (
-                        <Droplets className="h-5 w-5" style={{ color: 'hsl(220, 100%, 60%)' }} />
+                        <Droplets className="h-5 w-5 text-secondary" />
                       )}
                     </div>
                   </div>
@@ -896,7 +899,7 @@ export default function Dashboard() {
                       <h3 className="font-semibold mb-2">{badge.name}</h3>
                       <p className="text-sm text-muted-foreground mb-4">{badge.description}</p>
                       <Badge variant={isEarned ? "default" : "secondary"}>
-                        {isEarned ? "Earned" : "Not Earned"}
+                        {isEarned ? "Unlocked" : "In progress"}
                       </Badge>
                     </div>
                   </CardContent>

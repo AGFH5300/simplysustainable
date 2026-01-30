@@ -16,13 +16,13 @@ export function UsageCharts({ weeklyData }: UsageChartsProps) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-          <h3 className="text-lg font-semibold text-card-foreground mb-4">Electricity Usage</h3>
+          <h3 className="text-lg font-semibold text-card-foreground mb-4">Recycling Progress</h3>
           <div className="h-64 flex items-center justify-center text-muted-foreground">
             No data available
           </div>
         </div>
         <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-          <h3 className="text-lg font-semibold text-card-foreground mb-4">Water Usage</h3>
+          <h3 className="text-lg font-semibold text-card-foreground mb-4">Hydration Progress</h3>
           <div className="h-64 flex items-center justify-center text-muted-foreground">
             No data available
           </div>
@@ -48,10 +48,10 @@ export function UsageCharts({ weeklyData }: UsageChartsProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      {/* Electricity Usage Chart */}
+      {/* Recycling Progress Chart */}
       <div className="bg-card rounded-lg shadow-sm border border-border p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-card-foreground">Weekly Electricity Usage</h3>
+          <h3 className="text-lg font-semibold text-card-foreground">Weekly Recycling Wins</h3>
           <select 
             className="text-sm border border-border bg-input text-foreground rounded-md px-3 py-1"
             onChange={(e) => {
@@ -71,30 +71,30 @@ export function UsageCharts({ weeklyData }: UsageChartsProps) {
                 dataKey="name" 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'hsl(60, 20%, 70%)', fontSize: 12 }}
+                tick={{ fill: 'hsl(156, 16%, 42%)', fontSize: 12 }}
               />
               <YAxis 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'hsl(60, 20%, 70%)', fontSize: 12 }}
+                tick={{ fill: 'hsl(156, 16%, 42%)', fontSize: 12 }}
               />
               <Line
                 type="monotone"
                 dataKey="electricity"
-                stroke="hsl(60, 100%, 50%)"
+                stroke="hsl(155, 60%, 38%)"
                 strokeWidth={3}
-                dot={{ fill: "hsl(60, 100%, 50%)", strokeWidth: 2, r: 5 }}
-                activeDot={{ r: 7, fill: "hsl(60, 100%, 50%)" }}
+                dot={{ fill: "hsl(155, 60%, 38%)", strokeWidth: 2, r: 5 }}
+                activeDot={{ r: 7, fill: "hsl(155, 60%, 38%)" }}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Water Usage Chart */}
+      {/* Hydration Chart */}
       <div className="bg-card rounded-lg shadow-sm border border-border p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-card-foreground">Weekly Water Usage</h3>
+          <h3 className="text-lg font-semibold text-card-foreground">Weekly Water Intake</h3>
           <select 
             className="text-sm border border-border bg-input text-foreground rounded-md px-3 py-1"
             onChange={(e) => {
@@ -114,16 +114,16 @@ export function UsageCharts({ weeklyData }: UsageChartsProps) {
                 dataKey="name" 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'hsl(60, 20%, 70%)', fontSize: 12 }}
+                tick={{ fill: 'hsl(156, 16%, 42%)', fontSize: 12 }}
               />
               <YAxis 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: 'hsl(60, 20%, 70%)', fontSize: 12 }}
+                tick={{ fill: 'hsl(156, 16%, 42%)', fontSize: 12 }}
               />
               <Bar
                 dataKey="water"
-                fill="hsl(220, 100%, 60%)"
+                fill="hsl(190, 70%, 40%)"
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
