@@ -192,39 +192,39 @@ export class MemStorage implements IStorage {
       {
         id: 1,
         name: "Hydration Hero",
-        description: "Hit your hydration goal",
+        description: "Stay consistently hydrated all week long.",
         icon: "droplet",
-        requirement: "Average at least 12 cups/L for 2 weeks",
-        points: 60
+        requirement: "Average at least 12 L for 2 weeks",
+        points: 80
       },
       {
         id: 2,
-        name: "Recycling Streak",
-        description: "Keep the recycling rolling",
-        icon: "recycle",
-        requirement: "Log 10+ recycling actions for 2 weeks",
-        points: 75
+        name: "Energy Logger",
+        description: "Track electricity usage without missing a week.",
+        icon: "zap",
+        requirement: "Log electricity usage for 2 weeks",
+        points: 70
       },
       {
         id: 3,
         name: "Consistency Builder",
-        description: "Show up week after week",
+        description: "Keep your weekly tracking streak alive.",
         icon: "calendar-check",
         requirement: "Log habits for 4 weeks",
-        points: 100
+        points: 120
       },
       {
         id: 4,
         name: "Dual Goal Getter",
-        description: "Balance both habits",
+        description: "Balance both electricity and water goals.",
         icon: "sparkles",
-        requirement: "Meet hydration and recycling goals in 2 weeks",
-        points: 140
+        requirement: "Meet water and electricity goals in 2 weeks",
+        points: 160
       },
       {
         id: 5,
         name: "Mindful Tracker",
-        description: "Capture habit reflections",
+        description: "Capture reflections with every check-in.",
         icon: "pen-line",
         requirement: "Add notes in 2 habit logs",
         points: 110
@@ -232,9 +232,49 @@ export class MemStorage implements IStorage {
       {
         id: 6,
         name: "SimplySustainable Legend",
-        description: "Sustain the momentum",
+        description: "Sustain your momentum for the long haul.",
         icon: "award",
         requirement: "Log habits for 6 weeks",
+        points: 220
+      },
+      {
+        id: 7,
+        name: "Hydration Streaker",
+        description: "Turn hydration into a weekly habit.",
+        icon: "droplet",
+        requirement: "Hit 12 L or more for 4 weeks",
+        points: 180
+      },
+      {
+        id: 8,
+        name: "Complete Reporter",
+        description: "Never miss a detail in your weekly log.",
+        icon: "clipboard-check",
+        requirement: "Log both electricity and water for 3 weeks",
+        points: 140
+      },
+      {
+        id: 9,
+        name: "Reflection Pro",
+        description: "Add thoughtful context to your entries.",
+        icon: "notebook-pen",
+        requirement: "Add notes in 4 habit logs",
+        points: 150
+      },
+      {
+        id: 10,
+        name: "Steady Contributor",
+        description: "Show up with reliable, weekly updates.",
+        icon: "target",
+        requirement: "Log habits for 8 weeks",
+        points: 260
+      },
+      {
+        id: 11,
+        name: "Community Spark",
+        description: "Keep the sustainability momentum going.",
+        icon: "star",
+        requirement: "Log electricity usage for 6 weeks",
         points: 200
       }
     ];
@@ -402,10 +442,10 @@ export class MemStorage implements IStorage {
       }
     }
     
-    // Check for Recycling Streak badge
-    if (!earnedBadgeIds.includes(2) && entries.length >= 2) {
-      const strongWeeks = entries.filter(e => parseFloat(e.electricityUsage || "0") >= 10).length;
-      if (strongWeeks >= 2) {
+    // Check for Energy Logger badge
+    if (!earnedBadgeIds.includes(2)) {
+      const loggedElectricity = entries.filter(entry => (entry.electricityUsage || "").trim().length > 0).length;
+      if (loggedElectricity >= 2) {
         eligibleBadges.push(this.badges.get(2)!);
       }
     }
@@ -436,6 +476,46 @@ export class MemStorage implements IStorage {
 
     if (!earnedBadgeIds.includes(6) && entries.length >= 6) {
       eligibleBadges.push(this.badges.get(6)!);
+    }
+
+    // Check for Hydration Streaker badge
+    if (!earnedBadgeIds.includes(7)) {
+      const strongHydrationWeeks = entries.filter(entry => parseFloat(entry.waterUsage || "0") >= 12).length;
+      if (strongHydrationWeeks >= 4) {
+        eligibleBadges.push(this.badges.get(7)!);
+      }
+    }
+
+    // Check for Complete Reporter badge
+    if (!earnedBadgeIds.includes(8)) {
+      const completeWeeks = entries.filter(entry =>
+        (entry.electricityUsage || "").trim().length > 0 &&
+        (entry.waterUsage || "").trim().length > 0
+      ).length;
+      if (completeWeeks >= 3) {
+        eligibleBadges.push(this.badges.get(8)!);
+      }
+    }
+
+    // Check for Reflection Pro badge
+    if (!earnedBadgeIds.includes(9)) {
+      const notedWeeks = entries.filter(entry => (entry.notes || "").trim().length > 0).length;
+      if (notedWeeks >= 4) {
+        eligibleBadges.push(this.badges.get(9)!);
+      }
+    }
+
+    // Check for Steady Contributor badge
+    if (!earnedBadgeIds.includes(10) && entries.length >= 8) {
+      eligibleBadges.push(this.badges.get(10)!);
+    }
+
+    // Check for Community Spark badge
+    if (!earnedBadgeIds.includes(11)) {
+      const loggedElectricity = entries.filter(entry => (entry.electricityUsage || "").trim().length > 0).length;
+      if (loggedElectricity >= 6) {
+        eligibleBadges.push(this.badges.get(11)!);
+      }
     }
     
     return eligibleBadges;
