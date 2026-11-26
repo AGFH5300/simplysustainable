@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertUsageEntrySchema, insertSettingsSchema } from "@shared/schema";
@@ -14,6 +14,18 @@ function getMondayOfWeek(date: Date): string {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const DEFAULT_USER_ID = 1; // For demo purposes, using a single user
+
+  // No account authentication exists in this demo. Keep writes disabled by
+  // default until real user identity and row ownership are implemented.
+  // The opt-in below intentionally allows anonymous shared-demo writes only.
+  const requirePublicDemoWriteOptIn = (_req: Request, res: Response, next: NextFunction) => {
+    if (process.env.ALLOW_PUBLIC_DEMO_WRITES !== "true") {
+      return res.status(403).json({
+        message: "Public demo writes are disabled. Authentication is required for production use.",
+      });
+    }
+    next();
+  };
 
   // Usage entries routes
   app.get("/api/usage", async (req, res) => {
@@ -45,7 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/usage", async (req, res) => {
+  app.post("/api/usage", requirePublicDemoWriteOptIn, async (req, res) => {
     try {
       const validatedData = insertUsageEntrySchema.parse(req.body);
       
@@ -80,7 +92,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/usage/:id", async (req, res) => {
+  app.put("/api/usage/:id", requirePublicDemoWriteOptIn, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const validatedData = insertUsageEntrySchema.partial().parse(req.body);
@@ -156,7 +168,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/settings", async (req, res) => {
+  app.put("/api/settings", requirePublicDemoWriteOptIn, async (req, res) => {
     try {
       const validatedData = insertSettingsSchema.parse(req.body);
       const settings = await storage.updateSettings(DEFAULT_USER_ID, validatedData);
@@ -170,7 +182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/settings", async (req, res) => {
+  app.patch("/api/settings", requirePublicDemoWriteOptIn, async (req, res) => {
     try {
       const validatedData = insertSettingsSchema.partial().parse(req.body);
       const settings = await storage.updateSettings(DEFAULT_USER_ID, validatedData);
